@@ -22,18 +22,25 @@ while regiao != 1 and regiao != 2 and regiao != 3 and regiao != 4 and regiao != 
             match estado:
                 case 1:
                     print("Voce escolheu o estado do Acre")
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current_weather=true"
                 case 2:
                     print("Voce escolheu o estado do Amapa")
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current_weather=true"
                 case 3:
                     print("Voce escolheu o estado do Amazonas")
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current_weather=true"
                 case 4:
                     print("Voce escolheu o estado do Para")
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current_weather=true"
                 case 5:
                     print("Voce escolheu o estado de Rondonia")
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current_weather=true"
                 case 6:
                     print("Voce escolheu o estado de Roraima")
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current_weather=true"
                 case 7:
                     print("Voce escolheu o estado de Tocantins")
+                    url = f"https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current_weather=true"
                 case _:
                     print("Estado invalido")
         case 2:
