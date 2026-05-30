@@ -8,3 +8,5 @@ The user may be able to insert a new city, for that, a file named after the city
 CAIO - Decida se 1 arquivo novo deve ser criado para cada cidade, ou se só 1 com todas elas já basta;
 
 dps a gente pesquisa como faz pra adicionar inputs pra unm arquivo e do arquivo passar para o programa como variavel, ai faz o negocio de cadastro do tercio
+
+ou dava pra gente fazer como se fosse um serviço de enviar uma mensagem com a temperatura e previsao do tempo todo dia pelo telegram
