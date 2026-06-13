@@ -84,8 +84,13 @@ if cidade_encontrada is None:
     #Conexão com a API
 url = (f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true")
 
+clear()
+print("Trabalhando...")
+
 response = requests.get(url)
 dados_api = response.json()
+
+clear()
 
 temperatura = dados_api["current_weather"]["temperature"]
 clima = dados_api["current_weather"]["is_day"]
