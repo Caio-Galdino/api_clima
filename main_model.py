@@ -13,6 +13,13 @@ def clear():
     else:
         os.system("clear")
 
+def busca(city, dados):
+    index = -1
+    for i in range(len(dados)):
+        if(dados[i]['cidade'] == city):
+            return i
+    return -1
+
 clear()
 
 try:
@@ -31,7 +38,7 @@ while True:
         break
     #"Registrar nova cidade"
     elif escolha == 2:
-        cidade = input("Digite o nome da cidade (sem acentuação): ").upper()
+        cidade = input("Digite o nome da cidade: ").upper()
         latitude = input("Digite a latitude: ")
         longitude = input("Digite a longitude: ")
         #Criação em arquivo JSON
@@ -56,31 +63,39 @@ while True:
 
 #Busca as coordenadas das cidades no arquivo JSON 
 cidade_encontrada = None
+pull_city = input("Qual cidade? ").upper()
+index = busca(pull_city, dados)
+if (index > -1):
+    cid = dados[index]
+    print(cid["cidade"])
+    print(cid["longitude"])
+    print(cid["latitude"])
+
 for cidade in dados:
     if cidade["cidade"] == pull_city:
         cidade_encontrada = cidade
         latitude = cidade_encontrada["latitude"]
         longitude = cidade_encontrada["longitude"]
         break
-    else:
-        cidade_encontrada = cidade
-        latitude = cidade_encontrada["latitude"]
-        longitude = cidade_encontrada["longitude"]
+
+if cidade_encontrada is None:
+    print("Cidade não encontrada. Faça o registro.")
+    exit()
     #Conexão com a API
-    url = (f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true")
+url = (f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true")
 
-    response = requests.get(url)
-    dados_api = response.json()
+response = requests.get(url)
+dados_api = response.json()
 
-    temperatura = dados_api["current_weather"]["temperature"]
-    clima = dados_api["current_weather"]["is_day"]
-    if clima == 1:
-        clima = "dia"
-    else:
-        clima = "noite"
-    #Output de informações para o usuário
-    print(
-        f"A temperatura atual em {cidade_encontrada["cidade"]} é {temperatura}°C\n"
-        f"No momento, {cidade_encontrada["cidade"]} está de {clima}.\n"
-        )
-    #Falta mostrar o clima atual (se ta chovendo ou fazendo sol)
+temperatura = dados_api["current_weather"]["temperature"]
+clima = dados_api["current_weather"]["is_day"]
+if clima == 1:
+    clima = "dia"
+else:
+    clima = "noite"
+#Output de informações para o usuário
+print(
+    f"A temperatura atual em {cidade_encontrada["cidade"]} é {temperatura}°C\n"
+    f"No momento, {cidade_encontrada["cidade"]} está de {clima}.\n"
+    )
+#Falta mostrar o clima atual (se ta chovendo ou fazendo sol)
