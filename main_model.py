@@ -94,13 +94,32 @@ clear()
 
 temperatura = dados_api["current_weather"]["temperature"]
 clima = dados_api["current_weather"]["is_day"]
-if clima == 1:
-    clima = "dia"
+clima = dados_api["current_weather"]["weathercode"]
+
+#weathercode
+if clima == 0:
+    clima = "ensolarado"
+elif clima in [1,2,3]:
+    clima = "parcialmente nublado"
+elif clima in [45,46,47,48]:
+    clima = "com névoa"
+elif clima in [51,52,53,54,55]:
+    clima = "chuviscando"
+elif clima in [61,63,65,95,96,97,98,99]:
+    clima = "chovendo"
+elif clima in [71,72,73,74,75,80,81,82,85,86]:
+    clima = "nevando"
+elif clima in [95,96,97,98,99]:
+    clima = "trovejando"
+    
+#is_day
+if dia == 1:
+    dia = "dia"
 else:
-    clima = "noite"
+    dia = "noite"
+
 #Output de informações para o usuário
 print(
     f"A temperatura atual em {cidade_encontrada["cidade"]} é {temperatura}°C\n"
-    f"No momento, {cidade_encontrada["cidade"]} está de {clima}.\n"
+    f"No momento, {cidade_encontrada["cidade"]} está de {dia}, e está {clima}."
     )
-#Falta mostrar o clima atual (se ta chovendo ou fazendo sol)
