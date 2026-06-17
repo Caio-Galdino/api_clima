@@ -108,7 +108,7 @@ def exibir_grafico_historico():
         plt.legend()
         plt.tight_layout()
         
-        print("\n🎨 Abrindo o gráfico na tela...")
+        print("\n Abrindo o gráfico na tela...")
         plt.show()
         
     except requests.exceptions.RequestException as e:
