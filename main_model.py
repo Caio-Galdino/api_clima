@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import calendar
+from time import sleep
 
 def options():
     print("1. Iniciar programa\n"
@@ -27,7 +28,7 @@ def busca(city, dados):
     return -1
 
 def buscar_coordenadas(nome_cidade):
-    """Busca a latitude, longitude e timezone de qualquer cidade."""
+    #Busca a latitude, longitude e timezone de qualquer cidade
     url_geo = f"https://geocoding-api.open-meteo.com/v1/search?name={nome_cidade}&count=1&language=pt&format=json"
     resposta = requests.get(url_geo).json()
     
@@ -110,10 +111,16 @@ def exibir_grafico_historico():
         plt.tight_layout()
         
         print("\n Abrindo o gráfico na tela...")
+        sleep(2)
+        clear()
         plt.show()
         
     except requests.exceptions.RequestException as e:
         print(f"Erro ao buscar histórico de clima na API.")
+        sleep(2)
+        clear()
+
+clear()
 
 #Criação do json (caso ainda não tenha o arquivo)
 file = Path("dados.json")
