@@ -151,6 +151,7 @@ def exibir_grafico_historico():
         dados = resposta.json()
         
         # Cria o DataFrame
+        # salva os dados para a criacao do grafico
         df = pd.DataFrame({
             "Data": dados["daily"]["time"],
             "Máxima": dados["daily"]["temperature_2m_max"],
@@ -162,8 +163,8 @@ def exibir_grafico_historico():
         
         # --- PLOTAGEM DO GRÁFICO ---
         plt.figure(figsize=(12, 6))
-        plt.plot(df['Data'], df['Máxima'], label='Temp Máxima (°C)', color='darkorange', marker='o')
-        plt.plot(df['Data'], df['Mínima'], label='Temp Mínima (°C)', color='teal', marker='o')
+        plt.plot(df['Data'], df['Máxima'], label='Temp Máxima (°C)', color='red', marker='o')
+        plt.plot(df['Data'], df['Mínima'], label='Temp Mínima (°C)', color='blue', marker='o')
         
         plt.title(f'Histórico de Temperaturas - {localizacao["nome"]} ({mes:02d}/{ano})')
         plt.xlabel('Dias do Mês')
@@ -171,7 +172,9 @@ def exibir_grafico_historico():
         
         plt.xticks(rotation=45)
         plt.grid(True, linestyle='--', alpha=0.5)
+        #gera uma legenda com base nos labels
         plt.legend()
+        #ajusta o espacamento do grafico para nao cortar nada
         plt.tight_layout()
         
         print("\n Abrindo o gráfico na tela...")
