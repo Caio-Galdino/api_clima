@@ -1,6 +1,7 @@
 import requests
 import os
 import json
+from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import calendar
@@ -47,10 +48,10 @@ def exibir_grafico_historico():
     localizacao = buscar_coordenadas(cidade_input)
 
     if not localizacao:
-        print("❌ Cidade não encontrada. Verifique a grafia e tente novamente.")
+        print("Cidade não encontrada. Verifique a grafia e tente novamente.")
         return # Interrompe a função e volta pro menu
 
-    print(f"📍 Encontrado: {localizacao['nome']}")
+    print(f"Encontrado: {localizacao['nome']}")
     
     try:
         ano = int(input("Digite o ano (Ex: 2025): "))
@@ -64,7 +65,7 @@ def exibir_grafico_historico():
         end_date = f"{ano}-{mes:02d}-{ultimo_dia}"
         
     except ValueError:
-        print("❌ Erro: Por favor, digite apenas números válidos para ano e mês.")
+        print("Erro: Por favor, digite apenas números válidos para ano e mês.")
         return
 
     url_historico = "https://archive-api.open-meteo.com/v1/archive"
@@ -112,9 +113,12 @@ def exibir_grafico_historico():
         plt.show()
         
     except requests.exceptions.RequestException as e:
-        print(f"❌ Erro ao buscar histórico de clima na API.")
+        print(f"Erro ao buscar histórico de clima na API.")
 
-clear()
+#Criação do json (caso ainda não tenha o arquivo)
+file = Path("dados.json")
+if file.exists() == False:
+    os.system("touch dados.json")
 
 try:
     with open("dados.json", "r") as pull_city:
