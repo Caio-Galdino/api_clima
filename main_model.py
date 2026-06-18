@@ -42,6 +42,70 @@ def buscar_coordenadas(nome_cidade):
         }
     return None
 
+def main():
+    #Busca as coordenadas das cidades no arquivo JSON 
+    cidade_encontrada = None
+    pull_city = input("Qual cidade? ").upper()
+    index = busca(pull_city, dados)
+    if (index > -1):
+        cid = dados[index]
+        print(cid["cidade"])
+        print(cid["longitude"])
+        print(cid["latitude"])
+
+    for cidade in dados:
+        if cidade["cidade"] == pull_city:
+            cidade_encontrada = cidade
+            latitude = cidade_encontrada["latitude"]
+            longitude = cidade_encontrada["longitude"]
+            break
+
+    if cidade_encontrada is None:
+        print("Cidade não encontrada. Faça o registro.")
+        exit()
+        #Conexão com a API
+    url = (f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true")
+
+    clear()
+    print("Trabalhando...")
+
+    response = requests.get(url)
+    dados_api = response.json()
+
+    clear()
+
+    temperatura = dados_api["current_weather"]["temperature"]
+    dia = dados_api["current_weather"]["is_day"]
+    clima = dados_api["current_weather"]["weathercode"]
+
+    #weathercode
+    if clima == 0:
+        clima = "ensolarado"
+    elif clima in [1,2,3]:
+        clima = "parcialmente nublado"
+    elif clima in [45,46,47,48]:
+        clima = "com névoa"
+    elif clima in [51,52,53,54,55]:
+        clima = "chuviscando"
+    elif clima in [61,63,65,95,96,97,98,99]:
+        clima = "chovendo"
+    elif clima in [71,72,73,74,75,80,81,82,85,86]:
+        clima = "nevando"
+    elif clima in [95,96,97,98,99]:
+        clima = "trovejando"
+        
+    #is_day
+    if dia == 1:
+        dia = "dia"
+    else:
+        dia = "noite"
+
+    #Output de informações para o usuário
+    print(
+        f"A temperatura atual em {cidade_encontrada["cidade"]} é {temperatura}°C\n"
+        f"No momento, {cidade_encontrada["cidade"]} está de {dia}, e está {clima}."
+        )
+
 def exibir_grafico_historico():
     print("=== CONSULTA DE HISTÓRICO CLIMÁTICO ===")
     cidade_input = input("Digite o nome da cidade (Ex: Arapiraca): ")
@@ -56,7 +120,7 @@ def exibir_grafico_historico():
     
     try:
         ano = int(input("Digite o ano (Ex: 2025): "))
-        mes = int(input("Digite o mês (Ex: 1 para Janeiro, 5 para Maio): "))
+        mes = int(input("Digite o mês (Ex: 1 para Janeiro, 12 para Dezembro): "))
         
         # OTIMIZAÇÃO: A biblioteca calendar descobre o último dia do mês automaticamente (incluindo bissextos)
         ultimo_dia = calendar.monthrange(ano, mes)[1]
@@ -136,13 +200,20 @@ except:
 #Opções de ação (registrar novas coordenadas)
 while True:
     options()
-    escolha = int(input("Digite a opção desejada: "))
+    escolha = input("Digite a opção desejada: ")
     #"Rodar o programa"
-    if escolha == 1:
+    if escolha == "1":
         clear()
-        break
+        main()
+        sair = input("Pressione enter para sair. ")
+        if sair == "":
+            clear()
+            continue
+        else:
+            clear()
+            continue
     #"Registrar nova cidade"
-    elif escolha == 2:
+    elif escolha == "2":
         cidade = input("Digite o nome da cidade: ").upper()
         latitude = input("Digite a latitude: ")
         longitude = input("Digite a longitude: ")
@@ -162,75 +233,12 @@ while True:
         with open("dados.json", "w") as arquivo:
             json.dump(dados,arquivo,indent=4)
         clear()
-    elif escolha == 3:
+    elif escolha == "3":
         clear()
         exibir_grafico_historico()
-    elif escolha == 4:
+    elif escolha == "4":
         print("Saindo do programa...")
         exit()
     else:
-        print("Inválido.")
+        clear()
         continue
-
-#Busca as coordenadas das cidades no arquivo JSON 
-cidade_encontrada = None
-pull_city = input("Qual cidade? ").upper()
-index = busca(pull_city, dados)
-if (index > -1):
-    cid = dados[index]
-    print(cid["cidade"])
-    print(cid["longitude"])
-    print(cid["latitude"])
-
-for cidade in dados:
-    if cidade["cidade"] == pull_city:
-        cidade_encontrada = cidade
-        latitude = cidade_encontrada["latitude"]
-        longitude = cidade_encontrada["longitude"]
-        break
-
-if cidade_encontrada is None:
-    print("Cidade não encontrada. Faça o registro.")
-    exit()
-    #Conexão com a API
-url = (f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true")
-
-clear()
-print("Trabalhando...")
-
-response = requests.get(url)
-dados_api = response.json()
-
-clear()
-
-temperatura = dados_api["current_weather"]["temperature"]
-clima = dados_api["current_weather"]["is_day"]
-clima = dados_api["current_weather"]["weathercode"]
-
-#weathercode
-if clima == 0:
-    clima = "ensolarado"
-elif clima in [1,2,3]:
-    clima = "parcialmente nublado"
-elif clima in [45,46,47,48]:
-    clima = "com névoa"
-elif clima in [51,52,53,54,55]:
-    clima = "chuviscando"
-elif clima in [61,63,65,95,96,97,98,99]:
-    clima = "chovendo"
-elif clima in [71,72,73,74,75,80,81,82,85,86]:
-    clima = "nevando"
-elif clima in [95,96,97,98,99]:
-    clima = "trovejando"
-    
-#is_day
-if dia == 1:
-    dia = "dia"
-else:
-    dia = "noite"
-
-#Output de informações para o usuário
-print(
-    f"A temperatura atual em {cidade_encontrada["cidade"]} é {temperatura}°C\n"
-    f"No momento, {cidade_encontrada["cidade"]} está de {dia}, e está {clima}."
-    )
