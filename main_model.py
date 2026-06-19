@@ -11,7 +11,8 @@ def options():
     print("1. Iniciar programa\n"
           "2. Cadastrar cidade nova\n"
           "3. Gráfico de temperatura\n"
-          "4. Sair\n")
+          "4. Remover cidade\n"
+          "5. Sair\n")
     
 
 def clear():
@@ -42,6 +43,12 @@ def buscar_coordenadas(nome_cidade):
         }
     return None
 
+def cidade_existe(city, dados):
+    for item in dados:
+        if item['cidade'] == city:
+            return True
+    return False
+
 def main():
     #Busca as coordenadas das cidades no arquivo JSON 
     cidade_encontrada = None
@@ -52,7 +59,6 @@ def main():
         print(cid["cidade"])
         print(cid["longitude"])
         print(cid["latitude"])
-
     for cidade in dados:
         if cidade["cidade"] == pull_city:
             cidade_encontrada = cidade
@@ -63,7 +69,8 @@ def main():
     if cidade_encontrada is None:
         print("Cidade não encontrada. Faça o registro.")
         exit()
-        #Conexão com a API
+        
+    #Conexão com a API
     url = (f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true")
 
     clear()
@@ -114,7 +121,7 @@ def exibir_grafico_historico():
 
     if not localizacao:
         print("Cidade não encontrada. Verifique a grafia e tente novamente.")
-        return # Interrompe a função e volta pro menu
+        return  # Interrompe a função e volta pro menu
 
     print(f"Encontrado: {localizacao['nome']}")
     
@@ -151,7 +158,6 @@ def exibir_grafico_historico():
         dados = resposta.json()
         
         # Cria o DataFrame
-        # salva os dados para a criacao do grafico
         df = pd.DataFrame({
             "Data": dados["daily"]["time"],
             "Máxima": dados["daily"]["temperature_2m_max"],
@@ -163,8 +169,8 @@ def exibir_grafico_historico():
         
         # --- PLOTAGEM DO GRÁFICO ---
         plt.figure(figsize=(12, 6))
-        plt.plot(df['Data'], df['Máxima'], label='Temp Máxima (°C)', color='red', marker='o')
-        plt.plot(df['Data'], df['Mínima'], label='Temp Mínima (°C)', color='blue', marker='o')
+        plt.plot(df['Data'], df['Máxima'], label='Temp Máxima (°C)', color='darkorange', marker='o')
+        plt.plot(df['Data'], df['Mínima'], label='Temp Mínima (°C)', color='teal', marker='o')
         
         plt.title(f'Histórico de Temperaturas - {localizacao["nome"]} ({mes:02d}/{ano})')
         plt.xlabel('Dias do Mês')
@@ -172,9 +178,7 @@ def exibir_grafico_historico():
         
         plt.xticks(rotation=45)
         plt.grid(True, linestyle='--', alpha=0.5)
-        #gera uma legenda com base nos labels
         plt.legend()
-        #ajusta o espacamento do grafico para nao cortar nada
         plt.tight_layout()
         
         print("\n Abrindo o gráfico na tela...")
@@ -187,18 +191,42 @@ def exibir_grafico_historico():
         sleep(2)
         clear()
 
+def excluir_cidade(nome):
+    try:
+        with open("dados.json", "r") as arquivo:
+            dados = json.load(arquivo)
+    except:
+        print("Erro ao ler o arquivo.")
+        return
+
+    for i in range(len(dados)):
+        if dados[i]["cidade"] == nome:
+            del dados[i]
+
+            with open("dados.json", "w") as arquivo:
+                json.dump(dados, arquivo, indent=4)
+
+            print("Cidade removida com sucesso.\n")
+            return
+
+    print("Cidade não encontrada.\n")
+
 clear()
 
 #Criação do json (caso ainda não tenha o arquivo)
 file = Path("dados.json")
 if file.exists() == False:
-    os.system("touch dados.json")
+    if os.name == "nt":
+        os.system("ni dados.json")
+    else:
+        os.system("touch dados.json")
 
+#Leitura do json
 try:
     with open("dados.json", "r") as pull_city:
         dados = json.load(pull_city)
-except:
-    print("Erro.")
+except FileNotFoundError:
+    print("Erro 404.",FileNotFoundError)
 
 #Opções de ação (registrar novas coordenadas)
 while True:
@@ -218,28 +246,36 @@ while True:
     #"Registrar nova cidade"
     elif escolha == "2":
         cidade = input("Digite o nome da cidade: ").upper()
-        latitude = input("Digite a latitude: ")
-        longitude = input("Digite a longitude: ")
-        #Criação em arquivo JSON
-        nova_cidade = {
-            "cidade": cidade,
-            "latitude": latitude,
-            "longitude": longitude
-            }
-        try:
-            with open("dados.json", "r") as arquivo:
-                dados = json.load(arquivo)
-        except:
-            dados = []
+        if cidade_existe(cidade, dados) == True:
+            clear()
+            print("Essa cidade já existe, tente novamente!\n")
+        else:
+            latitude = input("Digite a latitude: ")
+            longitude = input("Digite a longitude: ")
+            #Criação em arquivo JSON
+            nova_cidade = {
+                "cidade": cidade,
+                "latitude": latitude,
+                "longitude": longitude
+                }
+            try:
+                with open("dados.json", "r") as arquivo:
+                    dados = json.load(arquivo)
+            except:
+                dados = []
 
-        dados.append(nova_cidade)
-        with open("dados.json", "w") as arquivo:
-            json.dump(dados,arquivo,indent=4)
-        clear()
+            dados.append(nova_cidade)
+            with open("dados.json", "w") as arquivo:
+                json.dump(dados,arquivo,indent=4)
+            clear()
     elif escolha == "3":
         clear()
         exibir_grafico_historico()
     elif escolha == "4":
+        clear()
+        cidade_excluida = input("Digite o nome da cidade a ser excluida: ").upper()
+        excluir_cidade(cidade_excluida)
+    elif escolha == "5":
         print("Saindo do programa...")
         exit()
     else:
